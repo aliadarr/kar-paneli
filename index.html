@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Kar Paneli</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f0f2f5;min-height:100vh;}
+#loginEkrani{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#0f0c29;padding:24px;}
+.l-baslik{color:#F27A1A;font-size:26px;font-weight:800;margin-bottom:4px;}
+.l-alt{color:rgba(255,255,255,0.4);font-size:13px;margin-bottom:28px;}
+.l-kutu{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.13);border-radius:20px;padding:26px;width:100%;max-width:360px;}
+.l-kutu label{display:block;color:rgba(255,255,255,0.55);font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:6px;margin-top:14px;}
+.l-kutu input{width:100%;padding:12px 14px;border-radius:11px;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:white;font-size:14px;outline:none;}
+.l-kutu input:focus{border-color:#F27A1A;}
+.l-btn{width:100%;padding:13px;background:#F27A1A;color:white;border:none;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer;margin-top:16px;}
+.l-hata{color:#ff6b6b;font-size:12px;text-align:center;margin-top:10px;display:none;}
+#panel{display:none;}
+.hdr{background:#F27A1A;padding:44px 16px 14px;color:white;display:flex;justify-content:space-between;align-items:flex-end;}
+.hdr h1{font-size:18px;font-weight:900;}.hdr p{font-size:11px;opacity:.8;margin-top:3px;}
+.cbt{background:rgba(255,255,255,0.2);border:none;color:white;padding:6px 13px;border-radius:16px;font-size:12px;cursor:pointer;}
+.dnot{background:#302b63;color:#c4b5fd;padding:8px 14px;font-size:11px;text-align:center;font-weight:700;display:none;}
+.mbar{background:white;padding:9px 14px;display:flex;gap:7px;overflow-x:auto;border-bottom:1px solid #eee;}
+.mbar::-webkit-scrollbar{display:none;}
+.mtab{padding:5px 14px;border-radius:16px;border:2px solid #F27A1A;background:white;color:#F27A1A;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.mtab.ak{background:#F27A1A;color:white;}
+.dbar{background:white;padding:7px 14px;display:flex;gap:6px;border-bottom:1px solid #eee;}
+.dtab{padding:5px 12px;border-radius:13px;border:1.5px solid #ddd;background:white;color:#777;font-size:11px;font-weight:700;cursor:pointer;}
+.dtab.ak{background:#0f0c29;color:white;border-color:#0f0c29;}
+.nav{display:flex;background:white;border-bottom:2px solid #eee;position:sticky;top:0;z-index:100;}
+.ntab{flex:1;padding:10px 2px;text-align:center;font-size:10px;font-weight:800;color:#bbb;cursor:pointer;border-bottom:3px solid transparent;}
+.ntab.ak{color:#F27A1A;border-bottom-color:#F27A1A;}
+.cont{padding:12px;}.sayfa{display:none;}.sayfa.ak{display:block;}
+.uyari{background:#ff416c;color:white;border-radius:12px;padding:12px 14px;margin-bottom:12px;display:none;}
+.uyari .ub{font-size:13px;font-weight:800;margin-bottom:4px;}.uyari .ul{font-size:11px;opacity:.9;line-height:1.7;}
+.kg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px;}
+.kart{border-radius:13px;padding:13px;color:white;}
+.kart .kl{font-size:10px;font-weight:700;opacity:.9;}.kart .kv{font-size:19px;font-weight:900;margin-top:4px;}.kart .ka{font-size:10px;opacity:.7;margin-top:3px;}
+.ky{background:#11998e;}.km{background:#2193b0;}.kt{background:#f7971e;}.kk{background:#cb2d3e;}
+.kmr{background:#834d9b;}.kko{background:#0f0c29;}.kpe{background:#f953c6;}.kca{background:#4facfe;}
+.gk{background:white;border-radius:13px;padding:13px;margin-bottom:11px;box-shadow:0 1px 6px rgba(0,0,0,0.07);}
+.gk h3{font-size:12px;font-weight:800;color:#222;margin-bottom:11px;}
+.tag{background:#F27A1A;color:white;border-radius:5px;padding:1px 6px;font-size:10px;margin-left:5px;}
+.twrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:11px;}
+th{background:#f8f9fa;padding:8px 7px;text-align:left;font-weight:800;color:#444;border-bottom:2px solid #eee;white-space:nowrap;}
+td{padding:7px;border-bottom:1px solid #f5f5f5;color:#333;vertical-align:middle;}
+tr:last-child td{border:none;}tr.ztr{background:#fff5f5;}
+.bdg{display:inline-block;padding:2px 7px;border-radius:7px;font-size:10px;font-weight:800;}
+.by{background:#e8f5e9;color:#1b5e20;}.bs{background:#fff8e1;color:#e65100;}
+.bk{background:#fce4ec;color:#b71c1c;}.bz{background:#ff1744;color:white;}
+.fg{margin-bottom:11px;}.fg label{display:block;font-size:11px;font-weight:800;color:#555;margin-bottom:5px;}
+.fg input{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:9px;font-size:13px;color:#333;outline:none;background:white;}
+.fg input:focus{border-color:#F27A1A;}
+.bto{background:#F27A1A;color:white;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:800;cursor:pointer;width:100%;margin-top:4px;}
+.btg{background:#f0f0f0;color:#555;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;width:100%;margin-top:5px;}
+.sr{border-radius:13px;padding:14px;color:white;margin-top:11px;display:none;}
+.sr .sb{font-size:13px;font-weight:700;}.sr .sv{font-size:24px;font-weight:900;margin:5px 0;}.sr .sa{font-size:11px;opacity:.85;}
+.si{background:#11998e;}.sk{background:#cb2d3e;}.so{background:#f7971e;}
+.hsat{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0;font-size:12px;}
+.hsat:last-child{border:none;font-weight:800;font-size:13px;}
+.hl2{color:#555;}.hv{font-weight:700;}.hr2{color:#e74c3c;}.hg2{color:#27ae60;}
+.ipu{background:#e8f4fd;border-left:3px solid #2193b0;border-radius:0 9px 9px 0;padding:9px 12px;font-size:11px;color:#1a5276;margin-bottom:11px;line-height:1.5;}
+.ynb{display:flex;align-items:center;gap:5px;background:#F27A1A;color:white;border:none;border-radius:9px;padding:7px 14px;font-size:12px;font-weight:800;cursor:pointer;margin-bottom:11px;}
+.ldiv{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;flex-direction:column;justify-content:center;align-items:center;z-index:999;}
+.spin{width:40px;height:40px;border:4px solid rgba(255,255,255,0.25);border-top-color:#F27A1A;border-radius:50%;animation:sp .8s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.ldiv p{color:white;margin-top:11px;font-size:13px;}
+.usat{display:flex;gap:8px;margin-bottom:7px;align-items:center;background:#f9f9f9;padding:8px 10px;border-radius:11px;border:1px solid #eee;}
+.uiw{position:relative;flex-shrink:0;}
+.uimg{width:38px;height:38px;border-radius:8px;object-fit:cover;border:1px solid #eee;display:block;}
+.ubig{display:none;position:fixed;z-index:9999;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,0.3);border:3px solid white;pointer-events:none;width:160px;height:160px;object-fit:cover;}
+.uiw:hover .ubig{display:block;}
+.unoimg{width:38px;height:38px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ubil{flex:3;min-width:0;}.uad{font-size:11px;font-weight:700;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ubk{font-size:10px;color:#aaa;margin-top:1px;}
+.uinp{padding:7px 5px;border:1.5px solid #ddd;border-radius:8px;font-size:12px;text-align:center;font-weight:700;outline:none;}
+.uinp:focus{border-color:#F27A1A;}
+.mbas{display:flex;gap:6px;font-size:10px;font-weight:800;color:#aaa;padding:0 5px;margin-bottom:5px;}
+</style>
+</head>
+<body>
+<div class="ldiv" id="ld"><div class="spin"></div><p>Yukleniyor...</p></div>
+<div id="loginEkrani">
+  <div class="l-baslik">Kar Paneli</div>
+  <div class="l-alt">Trendyol Gelismis Satici Analizi</div>
+  <div class="l-kutu">
+    <label>KULLANICI ADI</label><input type="text" id="lK" placeholder="admin" autocomplete="username"/>
+    <label>SIFRE</label><input type="password" id="lS" placeholder="********" autocomplete="current-password"/>
+    <button class="l-btn" onclick="giris()">Giris Yap</button>
+    <div class="l-hata" id="lH">Hatali kullanici adi veya sifre</div>
+  </div>
+</div>
+<div id="panel">
+  <div class="dnot" id="demoNot">Demo Mod - Ayarlar sekmesinden API bilgilerinizi girin</div>
+  <div class="hdr"><div><h1>Kar Paneli</h1><p id="hg"></p></div><button class="cbt" onclick="cikis()">Cikis</button></div>
+  <div class="mbar" id="mbar"></div>
+  <div class="dbar">
+    <button class="dtab ak" onclick="donem(this,7)">7 Gun</button>
+    <button class="dtab" onclick="donem(this,30)">30 Gun</button>
+    <button class="dtab" onclick="donem(this,90)">3 Ay</button>
+    <button class="dtab" onclick="donem(this,365)">1 Yil</button>
+  </div>
+  <div class="nav">
+    <div class="ntab ak" onclick="git(this,'ozet')">Ozet</div>
+    <div class="ntab" onclick="git(this,'urunler')">Urunler</div>
+    <div class="ntab" onclick="git(this,'kampanya')">Kampanya</div>
+    <div class="ntab" onclick="git(this,'hakedis')">Hakedis</div>
+    <div class="ntab" onclick="git(this,'ayarlar')">Ayarlar</div>
+  </div>
+  <div class="cont">
+    <div class="sayfa ak" id="s-ozet">
+      <button class="ynb" onclick="yukle()">Yenile</button>
+      <div class="uyari" id="uyari"><div class="ub">Zarar Riski!</div><div class="ul" id="uyariLst"></div></div>
+      <div class="kg">
+        <div class="kart ky"><div class="kl">NET KAR</div><div class="kv" id="netKar">-</div><div class="ka" id="netKarA">-</div></div>
+        <div class="kart km"><div class="kl">TOPLAM SIPARIS</div><div class="kv" id="topSip">-</div><div class="ka" id="topSipA">-</div></div>
+        <div class="kart kt"><div class="kl">BRUT GELIR</div><div class="kv" id="brut">-</div><div class="ka">Komisyon oncesi</div></div>
+        <div class="kart kk"><div class="kl">TOPLAM KESINTI</div><div class="kv" id="topKes">-</div><div class="ka">Kom+Kargo+KDV</div></div>
+      </div>
+      <div class="kg">
+        <div class="kart kmr"><div class="kl">KAR MARJI</div><div class="kv" id="karMrj">-</div><div class="ka">Net/Brut</div></div>
+        <div class="kart kko"><div class="kl">ZARAR SIPARIS</div><div class="kv" id="zararSp">-</div><div class="ka">Risk altinda</div></div>
+        <div class="kart kpe"><div class="kl">IADE MALIYETI</div><div class="kv" id="iadeMl">-</div><div class="ka">Gidis+donus</div></div>
+        <div class="kart kca"><div class="kl">ORT SIPARIS KARI</div><div class="kv" id="ortKar">-</div><div class="ka">Siparis basina</div></div>
+      </div>
+      <div class="gk"><h3>Gunluk Net Kar Trendi</h3><canvas id="karG" height="170"></canvas></div>
+      <div class="gk"><h3>Son Siparisler <span class="tag">Gercek Kar</span></h3>
+        <div class="twrap"><table><thead><tr><th>Siparis</th><th>Satis</th><th>Maliyet</th><th>Net Kar</th><th>Durum</th></tr></thead><tbody id="sipT"></tbody></table></div>
+      </div>
+    </div>
+    <div class="sayfa" id="s-urunler">
+      <div class="gk"><h3>Urun Karlilik <span class="tag">Gercek Formul</span></h3>
+        <div class="ipu">Kar = Satis - Maliyet - Komisyon - Kargo - Platform - Net KDV</div>
+        <div class="twrap"><table><thead><tr><th>Urun</th><th>Satis</th><th>Kom</th><th>Kargo</th><th>Net Kar</th><th>Marj</th></tr></thead><tbody id="urunT"></tbody></table></div>
+      </div>
+      <div class="gk"><h3>En Karli Urunler</h3><canvas id="urunG" height="210"></canvas></div>
+    </div>
+    <div class="sayfa" id="s-kampanya">
+      <div class="gk"><h3>Kampanya Simulatoru</h3>
+        <div class="ipu">Kampanyaya katilmadan once kar hesaplayin!</div>
+        <div class="fg"><label>SATIS FIYATI (TL)</label><input type="number" id="sS" placeholder="0" oninput="sim()"/></div>
+        <div class="fg"><label>URUN MALIYETI (TL)</label><input type="number" id="sM" placeholder="0" oninput="sim()"/></div>
+        <div class="fg"><label>KOMISYON ORANI (%)</label><input type="number" id="sK" value="15" oninput="sim()"/></div>
+        <div class="fg"><label>KARGO UCRETI (TL)</label><input type="number" id="sKr" value="25" oninput="sim()"/></div>
+        <div class="fg"><label>PLATFORM BEDELI (TL)</label><input type="number" id="sP" value="2.99" oninput="sim()"/></div>
+        <div class="fg"><label>KDV ORANI (%)</label><input type="number" id="sKdv" value="20" oninput="sim()"/></div>
+        <div class="fg"><label>KAMPANYA INDIRIMI (%)</label><input type="number" id="sI" value="0" oninput="sim()"/></div>
+        <div class="fg"><label>HEDEF KAR MARJI (%)</label><input type="number" id="sH" value="20" oninput="sim()"/></div>
+        <div class="sr" id="simR"><div class="sb" id="simB"></div><div class="sv" id="simV"></div><div class="sa" id="simA"></div></div>
+      </div>
+      <div class="gk"><h3>Indirim vs Kar</h3><canvas id="simG" height="190"></canvas></div>
+    </div>
+    <div class="sayfa" id="s-hakedis">
+      <div class="gk"><h3>Hakedis Dogrulama <span class="tag">Otomatik</span></h3>
+        <div class="ipu">Trendyol kesintilerini kontrol eder.</div><div id="hkIc"></div>
+      </div>
+      <div class="gk"><h3>Hatalar</h3><div id="hkHt"></div></div>
+    </div>
+    <div class="sayfa" id="s-ayarlar">
+      <div class="gk"><h3>API Baglantisi</h3>
+        <div class="ipu">Seller Panel - Hesabim - Entegrasyon Bilgileri</div>
+        <div id="apiF"></div><button class="bto" onclick="apiKyt()">API Bilgilerini Kaydet</button>
+      </div>
+      <div class="gk"><h3>Urun Maliyet Girisi</h3>
+        <div class="ipu">Urunleriniz listelenir. Resmin uzerine gelin buyur!</div>
+        <div id="malF"></div><button class="bto" onclick="malKyt()">Maliyetleri Kaydet</button>
+      </div>
+      <div class="gk"><h3>Genel Ayarlar</h3>
+        <div class="fg"><label>PLATFORM BEDELI (TL)</label><input type="number" id="aP" value="2.99"/></div>
+        <div class="fg"><label>KDV ORANI (%)</label><input type="number" id="aKdv" value="20"/></div>
+        <div class="fg"><label>MIN KAR MARJI (%)</label><input type="number" id="aMin" value="10"/></div>
+        <div class="fg"><label>DESI FIYATI (TL)</label><input type="number" id="aDesi" value="3.50"/></div>
+        <button class="bto" onclick="ayrKyt()">Ayarlari Kaydet</button>
+        <button class="btg" onclick="cikis()">Cikis Yap</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

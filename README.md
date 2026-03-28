@@ -1,4 +1,2 @@
 # Kar Paneli
-Trendyol Gercek Zamanli Karlilik Analizi
-
-Vercel deploy: 1774627795477
+Vercel deploy: 1774682577082

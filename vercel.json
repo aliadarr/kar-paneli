@@ -1,22 +1,8 @@
 {
-  "version": 2,
   "functions": {
     "api/trendyol.js": {
-      "runtime": "nodejs20.x"
+      "memory": 128,
+      "maxDuration": 10
     }
-  },
-  "routes": [
-    {
-      "src": "/api/trendyol",
-      "dest": "/api/trendyol.js"
-    },
-    {
-      "src": "/app.js",
-      "dest": "/app.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ]
+  }
 }

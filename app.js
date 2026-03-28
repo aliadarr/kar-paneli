@@ -6,7 +6,7 @@ var krs=localStorage.getItem('kargoBaremi');var KARGO_BAREMI=krs?JSON.parse(krs)
 var ks=localStorage.getItem('komisyonlar');var KOMISYONLAR=ks?JSON.parse(ks):[{kategori:'Varsayilan',oran:15}];
 var kds=localStorage.getItem('kdvOranlar');var KDV_ORANLARI=kds?JSON.parse(kds):[];
 var aktifMag=MAGAZALAR[0],aktifGun=7,karCh=null,urunCh=null,simCh=null,tumSip=[],_barkodlar=[],_ms=0,_komisyonMs=0,_kargoMs=0,_kdvMs=0;
-var VERCEL_API='https://kar-paneli.vercel.app/api/trendyol';
+var VERCEL_API='http://localhost:3000/api/trendyol';
 function fmt(n){return Math.round(parseFloat(n)).toLocaleString('tr-TR');}
 function kargoHesapla(desi){var d=parseFloat(desi)||AYARLAR.defaultDesi||2;var sorted=KARGO_BAREMI.slice().sort(function(a,b){return a.dan-b.dan;});for(var i=0;i<sorted.length;i++){if(d<=sorted[i].kadar)return sorted[i].fiyat;}return sorted.length>0?sorted[sorted.length-1].fiyat:29.90;}
 function komisyonHesapla(urun,satis){var mk=MALIYETLER[urun]||{};var kat=mk.kategori||'Varsayilan';var k=null;for(var i=0;i<KOMISYONLAR.length;i++){if(KOMISYONLAR[i].kategori===kat){k=KOMISYONLAR[i];break;}}var oran=(k?k.oran:15)/100;return satis*oran;}
